@@ -61,7 +61,7 @@ class FieldParser:
 
         to_return = {
             "id": features['id'],
-            "image_path": features['image_path'],
+            "image_path": features['image_path'][0],
             "image_emb": image_embed,
             "report": report_with_vid,
             "input_ids": input_ids_with_vid,
