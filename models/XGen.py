@@ -84,8 +84,8 @@ class XGenModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         to_log = {}
-        model_output, full_labels, last_embedding = self.generation(labels = batch['input_ids_with_vid'],
-                                                    caption_len = batch['len_caption_with_vid'],
+        model_output, full_labels, last_embedding = self.generation(labels = batch['input_ids'],
+                                                    caption_len = batch['len_report'],
                                                     training=True)                
         ce_loss = model_output.loss
         mse_loss = self.mse_loss(batch['image_emb'], last_embedding) * self.hparams.gen_loss_scale * 5
