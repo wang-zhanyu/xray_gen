@@ -22,6 +22,8 @@ def collate_func(batch):
         elif isinstance(v, np.ndarray):
              value = torch.tensor(np.stack(value))
              res[key] = value
+        elif isinstance(v, int):
+             res[key] = torch.tensor(value)
         else:
              print('unkown data type')
     return res
