@@ -82,6 +82,22 @@ class XGenModel(pl.LightningModule):
         return output, full_labels, last_embedding
 
 
+    def get_last_embedding(self, prompt):
+        out = self.llm_tokenizer(prompt, return_tensors="pt")
+        input_ids = out.input_ids[0]
+        input_ids = torch.cat([input_ids, torch.tensor(self.gen_token_idx)])
+        input_embs = self.input_embeddings(input_ids)
+        input_embs = input_embs.unsqueeze(0)
+        output = self.llm_model(inputs_embeds=input_embs,
+                        labels=input_ids.unsqueeze(0),
+                        output_hidden_states=True)
+        
+        input_hidden_state = output.hidden_states[-1][:, -self.hparams.num_tokens:, :]
+        input_embedding = input_embs[:, -self.hparams.num_tokens:, :]
+        last_embedding = self.gvll_mapper(input_hidden_state, input_embedding)
+        return last_embedding
+    
+
     def training_step(self, batch, batch_idx):
         to_log = {}
         model_output, full_labels, last_embedding = self.generation(labels = batch['input_ids'],
